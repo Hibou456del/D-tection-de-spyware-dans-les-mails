@@ -2,8 +2,8 @@ import email
 import imaplib
 import os
 
-# Connexion à la boîte de réception
-def connect_to_mailbox(email_user, email_password, imap_server):
+# Connexion à la boîte de réception 
+def connect_to_mailbox(email_user, email_password, imap_server):#définition d'une fonction pour connecter le mail
     mail = imaplib.IMAP4_SSL(imap_server)
     mail.login(email_user, email_password)
     mail.select('inbox')
