@@ -1,0 +1,45 @@
+import psutil
+import winreg
+
+# Liste des processus suspects connus
+SUSPECT_PROCESS_NAMES = ["keylogger.exe", "logger.exe"]  # Ajoutez d'autres noms si nécessaire
+
+def list_processes():
+    print("Liste des processus en cours :")
+    for proc in psutil.process_iter(['pid', 'name']):
+        try:
+            if proc.info['name'] in SUSPECT_PROCESS_NAMES:
+                print(f"ALERT: Process ID: {proc.info['pid']}, Name: {proc.info['name']}")
+            else:
+                print(f"Process ID: {proc.info['pid']}, Name: {proc.info['name']}")
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+
+def check_startup_entries():
+    keys = [
+        r"Software\Microsoft\Windows\CurrentVersion\Run",
+        r"Software\Microsoft\Windows\CurrentVersion\RunOnce"
+    ]#endroit de localisation des entrees
+    
+    print("\nClés de registre de démarrage :")
+    for key in keys:
+        try:
+            registry_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_READ)
+            print(f"Vérification de la clé de registre : {key}")
+            i = 0
+            while True:
+                try:
+                    value = winreg.EnumValue(registry_key, i)
+                    if "keylogger" in value[1].lower():  # Vérifiez si la valeur contient "keylogger"
+                        print(f"ALERT: Nom: {value[0]}, Valeur: {value[1]}")
+                    i += 1
+                except OSError:
+                    break
+            winreg.CloseKey(registry_key)
+        except FileNotFoundError:
+            print(f"Clé de registre non trouvée : {key}")
+
+# Appel des fonctions pour vérifier les processus et les clés de registre
+if __name__ == "__main__":
+    list_processes()
+    check_startup_entries()
