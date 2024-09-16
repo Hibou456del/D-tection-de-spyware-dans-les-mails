@@ -1,1 +1,2 @@
 # D-tection-de-spyware-dans-les-mails
+Il s'agit de mettre en place un  logiciel capable de détecter la présence de logicielos expions dans un mail.Nous ferons donc une simulation de test pour montrer comment agir un spyware;montrer son déploiement dans un système en temps réel.Nous ferons entre parenthèses  une illustration de la présence d'éléments etrangers dans un mail puis nous déploierons notre spyware-detect
