@@ -1,0 +1,35 @@
+import email
+import imaplib
+import os
+
+# Connexion à la boîte de réception
+def connect_to_mailbox(email_user, email_password, imap_server):
+    mail = imaplib.IMAP4_SSL(imap_server)
+    mail.login(email_user, email_password)
+    mail.select('inbox')
+    return mail
+
+# Télécharger les pièces jointes d'un email spécifique
+def download_attachments(mail, email_id, download_folder):
+    result, data = mail.fetch(email_id, '(RFC822)')
+    msg = email.message_from_bytes(data[0][1])
+    if msg.is_multipart():
+        for part in msg.walk():
+            if part.get_content_maintenance_type() == 'application/octet-stream':  # Filtre pour les pièces jointes binaires
+                filename = part.get_filename()
+                if filename:
+                    filepath = os.path.join(download_folder, filename)
+                    with open(filepath, 'wb') as f:
+                        f.write(part.get_payload(decode=True))
+                    print(f"Pièce jointe téléchargée : {filepath}")
+
+if __name__ == "__main__":
+    email_user = 'votre-email@example.com'
+    email_password = 'votre-mot-de-passe'
+    imap_server = 'imap.example.com'  # Serveur IMAP de votre fournisseur d'email
+    download_folder = './attachments'
+
+    mail = connect_to_mailbox(email_user, email_password, imap_server)
+    result, data = mail.search(None, 'ALL')  # Cherche tous les emails
+    for email_id in data[0].split():
+        download_attachments(mail, email_id, download_folder)
